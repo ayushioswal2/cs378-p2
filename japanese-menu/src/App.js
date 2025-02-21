@@ -145,7 +145,7 @@ function App() {
       </div>
 	  <div className="text-center">
 			<h4>Total: ${calculateTotal()}</h4>
-			<button className="btn btn-secondary mx-2" onClick={placeOrder} disabled={Object.keys(cart).length === 0}>Order</button>
+			<button className="btn btn-secondary mx-2" onClick={placeOrder}>Order</button>
 			<button className="btn mx-2" onClick={clearCart} disabled={Object.keys(cart).length === 0}>Clear All</button>
 		</div>
 		<PopUp
