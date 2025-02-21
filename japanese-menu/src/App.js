@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import MenuItem from './components/MenuItem';
+import PopUp from './components/PopUp';
 
 // import 'bootstrap/dist/css/bootstrap.min.css'; // This imports bootstrap css styles. You can use bootstrap or your own classes by using the className attribute in your elements.
 
@@ -85,6 +86,9 @@ const menuItems = [
 
 function App() {
 	const [cart, setCart] = useState({})
+	const [isPopupOpen, setIsPopupOpen] = useState(false);
+	const [orderSummary, setOrderSummary] = useState("");
+
 
 	const addToCart = (item) => {
 		setCart((prevCart) => ({
@@ -104,9 +108,31 @@ function App() {
 			return updatedCart;
 		});
 	};
+
+	const clearCart = () => {
+        setCart({});
+    };
+
+    const calculateTotal = () => {
+        return menuItems.reduce((total, item) => total + (cart[item.id] || 0) * item.price, 0).toFixed(2);
+    };
+
+    const placeOrder = () => {
+        const template = menuItems.filter(item => cart[item.id]).map(item => `${item.title} x ${cart[item.id]}`).join('\n');
+
+		if (Object.keys(cart).length === 0) {
+			setOrderSummary("No items in cart")
+		} else {
+			setOrderSummary(template)
+		}
+		setIsPopupOpen(true);
+
+        // alert(`Order Summary:\n${orderSummary}\n\nTotal: $${calculateTotal()}`);
+    };
+
   return (
     <div>
-      <img src="images/menuImage.png" className="menu-image"/>
+      <img src={`${process.env.PUBLIC_URL}/images/menuHeader.png`} className="menu-image"/>
 	  <h3 className="menu-description">Fresh food everyday...</h3>
       <div className="menu">
         {/* Display menu items dynamicaly here by iterating over the provided menuItems */}
@@ -117,6 +143,16 @@ function App() {
                         quantity={cart[menuItem.id] || 0}/>
 		))}
       </div>
+	  <div className="text-center">
+			<h4>Total: ${calculateTotal()}</h4>
+			<button className="btn btn-secondary mx-2" onClick={placeOrder} disabled={Object.keys(cart).length === 0}>Order</button>
+			<button className="btn mx-2" onClick={clearCart} disabled={Object.keys(cart).length === 0}>Clear All</button>
+		</div>
+		<PopUp
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        orderSummary={orderSummary}
+      />
     </div>
   );
 }
